@@ -22,7 +22,7 @@ services:
 
   # ========== Spring Boot Backend ==========
   backend:
-    image: ${DOCKER_USERNAME:-local}/rikkei-be:latest
+    image: nambun265/rikkei-be:latest
     container_name: rikkei_backend
     restart: unless-stopped
     depends_on:
