@@ -30,7 +30,36 @@ jobs:
       - name: Push to Docker Hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/rikkei-be:latest
 
-      # 5. Deploy to production server via SSH
+      # 5. Pre-setup Server Directory
+      - name: Prepare Directory on Server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            mkdir -p /home/ubuntu/rikkei-project
+
+      # 6. Copy docker-compose Server
+      - name: Copy docker-compose
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu/rikkei-project"
+
+      - name: Copy nginx config
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "nginx"
+          target: "/home/ubuntu/rikkei-project"
+
+      # 7. Deploy to production server via SSH
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1
         with:
@@ -38,7 +67,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/rikkei-project
+            cd /home/ubuntu/rikkei-project
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker-compose pull
