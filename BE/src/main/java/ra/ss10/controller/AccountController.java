@@ -19,8 +19,9 @@ public class AccountController {
         List<Account> accounts = accountService.getAllAccounts();
         return ResponseEntity.ok(accounts);
     }
+
     @PostMapping
-    public ResponseEntity<Account> addAccount(Account account) {
+    public ResponseEntity<Account> addAccount(@RequestBody Account account) {
         accountService.addAccount(account);
         return ResponseEntity.status(201).body(account);
     }
