@@ -5,7 +5,7 @@ COPY . .
 RUN gradle build -x test --no-daemon
 
 # ========== Stage 2: Runtime ==========
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=builder /build/build/libs/*.jar app.jar
 EXPOSE 9999
